@@ -1,0 +1,39 @@
+1.C 库函数strtol:
+
+原型:long int strtol(const char *str, char **endptr, int base) 
+把参数 str 所指向的字符串中的数字根据给定的 base 转换为一个长整数（类型为 long int 型），base 必须介于 2 和 36（包含）之间，或者是特殊值 0（未测试）。如果没有执行有效的转换，则返回一个零值。
+Base是进制常用为2,10,16
+
+
+2.Strtok函数:string.h库中
+
+原型：char *strtok(char s[], const char *delim)
+将s中的delim字符（未尝试替换字符串）替换为\0，即字符串结束符号将其存入静态内存中，并且会破坏原本字符串的完整性，使用方式较为特殊，具体代码演示如下:
+#include <string.h>
+#include <stdio.h>
+ 
+int main () {
+   char str[80] = "This is - www.runoob.com - website";
+   const char s[2] = "-";
+   char *token;
+   
+   /* 获取第一个子字符串 */
+   token = strtok(str, s);
+   
+   /* 继续获取其他的子字符串 */
+   while( token != NULL ) {
+      printf( "%s\n", token );
+    
+      token = strtok(NULL, s);
+   }
+   
+   return(0);
+}
+output:
+This is 
+ www.runoob.com 
+ website
+
+详情见:https://www.runoob.com/cprogramming/c-function-strtok.html
+
+
