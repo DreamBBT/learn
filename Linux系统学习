@@ -1,0 +1,455 @@
+Linux系统：
+ls使用：
+
+-d 显示目录本身
+root@isi34:/home/isi# ls -l -d a
+drwxr-xr-x 3 root root 4096 Aug  5 08:00 a
+root@isi34:/home/isi# ls -l a
+total 4
+drwxr-xr-x 3 root root 4096 Aug  5 08:00 b
+
+
+数据读出如下：
+文件类型（-：文件，d：路径，l：软链接）；读r，写w，执行x，-无；依次为本人，同组，访客
+6，3，1：链接数（硬链接）；名称；文件大小；修改时间。 
+root@isi34:/home/isi# ls -la
+total 68
+drwxr-xr-x 6 isi  isi   4096 Aug  5 08:00 .
+drwxr-xr-x 3 root root  4096 Aug  1 08:54 ..
+drwxr-xr-x 3 root root  4096 Aug  5 08:00 a
+-rw------- 1 isi  isi     21 Aug  4 09:54 .bash_history
+-rw-r--r-- 1 isi  isi    220 Apr  4  2018 .bash_logout
+-rw-r--r-- 1 isi  isi   3771 Apr  4  2018 .bashrc
+drwx------ 2 isi  isi   4096 Aug  1 08:54 .cache
+drwx------ 3 isi  isi   4096 Aug  1 08:54 .gnupg
+-rw-rw-r-- 1 isi  isi  22246 Aug  5 03:31 labclient-2.2.0-py3-none-any.whl
+-rw-r--r-- 1 isi  isi    807 Apr  4  2018 .profile
+-rw-r--r-- 1 isi  isi      0 Aug  1 08:54 .sudo_as_admin_successful
+-rw------- 1 isi  isi     51 Aug  4 09:55 .Xauthority
+drwxr-xr-x 2 root root  4096 Aug  3 10:09 xf
+
+l和s
+root@isi34:/home/isi# ls -ls
+total 32
+4 drwxr-xr-x 3 root root  4096 Aug  5 08:00 a
+24 -rw-rw-r-- 1 isi  isi  22246 Aug  5 03:31 labclient-2.2.0-py3-none-any.whl
+4 drwxr-xr-x 2 root root  4096 Aug  3 10:09 xf
+
+R
+读取目录以及其下的数据
+root@isi34:/home/isi# ls -R
+.:
+a  labclient-2.2.0-py3-none-any.whl  xf
+
+./a:
+b
+
+./a/b:
+c
+
+./a/b/c:
+
+./xf:
+hello.c  test.txt
+
+软硬链接详情见：
+https://blog.csdn.net/even160941/article/details/90770186
+ln a b 创建硬链接b（指针指向a的内容，和b中的内容等同）
+ln -s a b 创建软连接b（类似于快捷方式，可创建目录的软连接，链接对象失去就无法使用，类似于b指向a ,ba）
+eg：
+root@isi34:/home/isi/xf# ln hello.c a
+root@isi34:/home/isi/xf# ls -l
+total 12
+-rw-r--r-- 2 root root 70 Aug  3 07:08 a
+-rw-r--r-- 2 root root 70 Aug  3 07:08 hello.c
+-rw-r--r-- 1 root root 41 Aug  3 06:35 test.txt
+**软连接可先于文件创建之初创建**（安全问题）
+
+
+mkdir使用：
+
+-p 创建连环目录，区别于当创建目录时在某个位置访问中断依旧能够成功创建目录而不是创建失败。
+Eg：
+root@isi34:/home/isi# mkdir -p a/b/c
+root@isi34:/home/isi# tree
+.
+├── a
+│   └── b
+│       └── c
+├── labclient-2.2.0-py3-none-any.whl
+└── xf
+    ├── hello.c
+└── test.txt
+
+
+cp： 
+-r 针对路径 拷贝路径及其子路径。
+Eg：
+root@isi34:/home/isi# ls
+a  labclient-2.2.0-py3-none-any.whl  xf
+root@isi34:/home/isi# tree
+.
+├── a
+│   └── b
+│       └── c
+├── labclient-2.2.0-py3-none-any.whl
+└── xf
+    ├── hello.c
+    └── test.txt
+
+4 directories, 3 files
+root@isi34:/home/isi# cd xf
+root@isi34:/home/isi/xf# ls
+hello.c  test.txt
+root@isi34:/home/isi/xf# cp ../a .
+cp: -r not specified; omitting directory '../a'
+root@isi34:/home/isi/xf# cp -r ../a .
+root@isi34:/home/isi/xf# tree
+.
+├── a
+│   └── b
+│       └── c
+├── hello.c
+└── test.txt
+
+3 directories, 2 files
+
+-f会覆盖已有同名文件而不提示（默认也是不提醒）
+-i会提示
+-d保留链接
+-p会保留修改时间和权限
+-a保留链接，修改时间和权限，文件属性==dpR
+-l 生成链接而不复制
+
+
+rm：
+文件删除：
+-f  强制删除，不提醒（默认）
+-i  提醒
+目录删除：
+直接删除会报错
+-r  删除目录及其中文件
+Eg：
+root@isi34:/home/isi/xf# rm a
+rm: cannot remove 'a': Is a directory
+root@isi34:/home/isi/xf# rm -r a
+root@isi34:/home/isi/xf# ls
+
+root@isi34:/home/isi# rm -ir a
+rm: descend into directory 'a'? y
+rm: descend into directory 'a/b'? y
+rm: remove directory 'a/b/c'? y
+rm: remove directory 'a/b'? y
+rm: remove directory 'a'? y
+
+mv：
+移动文件/目录
+改名：
+mv a b，
+a改为b
+或者将a放入b
+改名和放入可同时进行
+
+cat：显示文件内容
+
+eg：
+root@isi34:/home/isi/xf# cat hello.c
+#include<stdio.h>
+
+int main()
+{
+        printf("hello horld!");
+        return 0;
+}
+
+head:显示头10行，或者加参数
+head -数字 文件
+
+eg：
+root@isi34:/home/isi/xf# head -2 hello.c
+#include<stdio.h>
+
+root@isi34:/home/isi/xf# head hello.c
+#include<stdio.h>
+
+int main()
+{
+        printf("hello horld!");
+        return 0;
+}
+tail：显示尾部其余同上
+-f 可以在动态写入文件尾部的时候进行监控查看 查看log
+
+
+more:
+分页阅读：回车逐行，空格逐页，只能向后翻页，读完退出
+less：
+上下翻页，读完不自动退出，按q退出
+
+
+echo：回显 打印指令 打印其后的数据（常用于日志）
+root@isi34:/home/isi/xf# echo a
+a
+输出重定向：
+使用方式> a
+默认的输出位置为显示器的shell，使用输出重定向之后，可以输出到文件中(可创建文件，且写入的方法为覆盖写入)，可使用>>来实现末尾写入:
+
+eg:
+root@isi34:/home/isi/xf# ls
+hello.c  test.txt
+root@isi34:/home/isi/xf# echo a >a
+root@isi34:/home/isi/xf# ls
+a  hello.c  test.txt
+root@isi34:/home/isi/xf# head a
+a
+root@isi34:/home/isi/xf# echo b>a
+root@isi34:/home/isi/xf# head a
+b
+root@isi34:/home/isi/xf# echo ccc>>a
+root@isi34:/home/isi/xf# head a
+b
+ccc
+重定向的作用不止于此,除开echo,其他的打印内容都可以导入文件中或其他地方,如ls 显示的内容等。
+
+别名：
+实现：alias a=‘adsaddadsad’
+可用a代替adsaddadsad这些操作
+unalias：删除别名
+alias：查看已有别名
+
+eg：
+root@isi34:/home/isi/xf# alias a=ls
+root@isi34:/home/isi/xf# a
+a  hello.c  test.txt
+root@isi34:/home/isi/xf# alias
+alias a='ls'
+alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -alF'
+root@isi34:/home/isi/xf# unalias a
+root@isi34:/home/isi/xf# alias
+alias l='ls -CF'
+alias la='ls -A'
+alias ll='ls -alF'
+
+注：可以将别名写入 .bashrc 文件中,这样如果每次外部访问时可以获得平时的别名操作。
+写入文件的格式不变。
+其中内容如下：
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+
+# some more ls aliases
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+你甚至可以在别人访问登录的时候使用简写实现直接/简单登录（写入密码明文）。
+如果刚在其中进行了修改，则需要使用source ~/.bashrc命令进行更新
+
+清屏：clear or ctrl+L
+
+通配符：‘*’和‘？’
+*表示任意多个字符
+？表示任意一个字符
+
+tree：
+以树的形式显示文件：
+-f 显示路径 
+-n 不显示色彩 
+-s 表明大小 
+-t 按照时间排序
+
+
+查找系列：
+find：Find命令主要用于指定匹配文件条件的参数查找或者定位文件和目录的列表
+find 查找目录 条件 动作
+目录：开始查找的根目录，查找会遍历文件。
+条件：查找的名字，大小，修改时间等
+动作：找到之后执行什么操作，不输入默认是打印在屏幕上
+具体的操作如下：
+root@YCRDCTJSI-003:~# find -name findfile #在当前目录下查找名为findfile的文件
+root@YCRDCTJSI-003:~# find /root -iname findfile #在/root目录下查找名为findfile的文件，忽略大小写
+root@YCRDCTJSI-003:~# find / -empty #查找系统中所有的空文档
+root@YCRDCTJSI-003:~# find / -group student #查找系统中所属组为student的文件
+root@YCRDCTJSI-003:~# find / -user stu_1 #查找系统中所属用户为stu_1的文件
+root@YCRDCTJSI-003:~# find ./ -type f #查找当前目录下的普通文件
+root@YCRDCTJSI-003:~# find ./ -type d -name dir* #查找当前目录下以dir开头的目录文件
+root@YCRDCTJSI-003:~# find / mtime -3 #查找系统中所有3天内被修改过的文件
+root@YCRDCTJSI-003:~# find / mtime +3 #查找系统中所有3天前被修改过的文件
+root@YCRDCTJSI-003:~# find / mtime 3 #查找系统中所有3天前当天被修改过的文件
+root@YCRDCTJSI-003:~# find / -size +10M #查找系统中大于10M的文件
+补充
+-mount, -xdev : 只检查和指定目录在同一个文件系统下的文件，避免列出其它文件系统中的文件
+-amin n : 在过去 n 分钟内被读取过
+-anewer file : 比文件 file 更晚被读取过的文件
+-atime n : 在过去n天内被读取过的文件
+-cmin n : 在过去 n 分钟内被修改过
+-cnewer file :比文件 file 更新的文件
+-ctime n : 在过去n天内被修改过的文件
+-empty : 空的文件-gid n or -group name : gid 是 n 或是 group 名称是 name
+-ipath p, -path p : 路径名称符合 p 的文件，ipath 会忽略大小写
+-name name, -iname name : 文件名称符合 name 的文件。iname 会忽略大小写
+-size n : 文件大小 是 n 单位，b 代表 512 位元组的区块，c 表示字元数，k 表示 kilobytes，w 是二个位元组。
+-type c : 文件类型是 c 的文件。
+
+注意：常用的find指令-name需要准确的名字，模糊的名字可以使用通配符表示。
+
+root@isi34:/home/isi/xf# export
+declare -x DISPLAY="localhost:10.0"
+declare -x HOME="/root"
+declare -x LANG="en_US.UTF-8"
+declare -x LESSCLOSE="/usr/bin/lesspipe %s %s"
+declare -x LESSOPEN="| /usr/bin/lesspipe %s"
+declare -x LOGNAME="root"
+declare -x LS_COLORS="rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:"
+declare -x MAIL="/var/mail/root"
+declare -x OLDPWD="/home/isi/xf/b/b/b"
+declare -x PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+declare -x PWD="/home/isi/xf"
+declare -x SHELL="/bin/bash"
+declare -x SHLVL="1"
+declare -x SUDO_COMMAND="/bin/su"
+declare -x SUDO_GID="1000"
+declare -x SUDO_UID="1000"
+declare -x SUDO_USER="isi"
+declare -x TERM="xterm"
+declare -x USER="root"
+declare -x USERNAME="root"
+Linux中也是具有系统路径：（PATH）的。
+
+whereis：用来查看系统中的Linux系统中相关的系统命令程序（path中），man说明文档，源代码文件，eg：whereis ls
+root@isi34:/home/isi/xf#  whereis ls
+ls: /bin/ls /usr/share/man/man1/ls.1.gz
+root@isi34:/home/isi/xf#
+
+which：在path中查找指令的位置，并返回第一个结果。
+
+内容查找：
+grep：在文件中进行查找，查找到的数据按行打印，即打印其所在行（同行多次命中也只打印一次）。
+格式：grep 查找内容 文件名称/内容（内容指其他程序打印出来的内容或者其他文件中已经被查询的内容，可以通过管道链接执行此操作，如 cat a | grep b == grep b a）
+详情见下方。
+
+root@isi34:/home/isi/xf# ls
+a  b  hello.c  test.txt
+root@isi34:/home/isi/xf# grep hello hello.c
+        printf("hello horld!");
+root@isi34:/home/isi/xf#
+-r 遍历，遍历路径：
+eg：
+root@isi34:/home/isi/xf# grep -r hello
+test.txt:hello woeld!
+Binary file .hello.c.swp matches
+hello.c:        printf("hello horld!");
+
+-n 显示行号
+
+
+
+grep命令也常和符号“|”一起使用，符号“|”为管道命令符，其作用是连接两个命令 将前面一个命令的输出作为后面一个命令的输入。如：
+root@YCRDCTJSI-003:~# cat /etc/passwd 
+#cat命令将/etc/passwd文件的内容输出显示到屏幕上
+root@YCRDCTJSI-003:~# cat /etc/passwd | grep root
+#使用管道命令连接两个命令，即将 cat 命令的输出将不直接显示在屏幕上，而是作为 grep 命令的输入
+#即使用 grep 命令在 cat 命令的输出结果中查找包含 user1 的行，其执行结果和 “grep user1 /etc/passwd” 命令是一样
+grep命令的更多用法
+root@YCRDCTJSI-003:~# grep :..0: passwd #在passwd文件中查找“：”和“0：”之间包含任意两个字符的字串
+root@YCRDCTJSI-003:~# grep 00* passwd #在passwd文件中查找第1个必须为0，第2个0可以出现0次或多次的字串
+root@YCRDCTJSI-003:~# grep o[os]t passwd #在passwd文件中查找第1个为o，第2个为o或s，第3个为t的字串
+root@YCRDCTJSI-003:~# grep [f-q] passwd #在passwd文件中查找包含f~q字母的行
+root@YCRDCTJSI-003:~# grep ^root passwd #在passwd文件中查找以root开头的行
+root@YCRDCTJSI-003:~# grep bash$ passwd #在passwd文件中查找以bash结尾的行
+root@YCRDCTJSI-003:~# grep sbin/[^n] passwd
+#在passwd文件中查找sbin/后面不跟n的行
+root@YCRDCTJSI-003:~# grep "0\{1，2\}" passwd
+#在passwd文件中查找0出1次到2次的行
+root@YCRDCTJSI-003:~# grep "\(root\).*\1" passwd
+#在passwd文件中查找“root”和“root”之间包含任意字符的行
+root@YCRDCTJSI-003:~# grep "\(root\)\(:\).*\2\1" passwd
+#在passwd文件中查找“root:”和“:root”之间包含任意字符的行
+root@YCRDCTJSI-003:~# grep ^$ passwd
+#在passwd文件中查找空白行
+补充
+-a 或 --text : 不要忽略二进制的数据。
+-A<显示行数> 或 --after-context=<显示行数> : 除了显示符合范本样式的那一列之外，并显该行之后的内容。
+-b 或 --byte-offset : 在显示符合样式的那一行之前，标示出该行第一个字符的编号。
+-B<显示行数> 或 --before-context=<显示行数> : 除了显示符合样式的那一行之外，并显示该之前的内容。
+-c 或 --count : 计算符合样式的列数。
+-C<显示行数> 或 --context=<显示行数>或-<显示行数> : 除了显示符合样式的那一行之外，并示该行之前后的内容。
+-d <动作> 或 --directories=<动作> : 当指定要查找的是目录而非文件时，必须使用这项参数否则grep指令将回报信息并停
+-e<范本样式> 或 --regexp=<范本样式> : 指定字符串做为查找文件内容的样式。
+-E 或 --extended-regexp : 将样式为延伸的正则表达式来使用。
+-f<规则文件> 或 --file=<规则文件> : 指定规则文件，其内容含有一个或多个规则样式，让gre查找符合规则条件的文件内容
+-F 或 --fixed-regexp : 将样式视为固定字符串的列表。
+-G 或 --basic-regexp : 将样式视为普通的表示法来使用。
+-h 或 --no-filename : 在显示符合样式的那一行之前，不标示该行所属的文件名称。
+-H 或 --with-filename : 在显示符合样式的那一行之前，表示该行所属的文件名称。
+-i 或 --ignore-case : 忽略字符大小写的差别。
+-l 或 --file-with-matches : 列出文件内容符合指定的样式的文件名称。
+-L 或 --files-without-match : 列出文件内容不符合指定的样式的文件名称。
+-n 或 --line-number : 在显示符合样式的那一行之前，标示出该行的列数编号。
+-o 或 --only-matching : 只显示匹配PATTERN 部分。
+-q 或 --quiet或--silent : 不显示任何信息。
+-r 或 --recursive : 此参数的效果和指定"-d recurse"参数相同。
+-s 或 --no-messages : 不显示错误信息。
+-v 或 --invert-match : 显示不包含匹配文本的所有行。
+-V 或 --version : 显示版本信息。
+-w 或 --word-regexp : 只显示全字符合的列。
+-x --line-regexp : 只显示全列符合的列。
+-y : 此参数的效果和指定"-i"参数相同
+
+
+管道命令符：
+‘|’：这就是管道命令符，可以在两个命令之间使用。
+作用是将前一个命令的输出传入后一个命令的输入。（即：输出到屏幕的标准正常数据输入到后一个命令。）
+
+压缩与解压缩命令：
+压缩和打包：二者的概念不同，前者为压缩文件以减少其占用空间，后者为打包文件，作用是将多个文件/目录变为一个文件。
+1.	gzip和gunzip
+gzip可以用来压缩文件，生成gz文件。gunzip可以用来解压文件。
+gzip -d ==gunzip，用来解压缩
+
+gzip -r 目录 压缩目录下的所有文件（仅仅是压缩单个文件，并不打包）
+其他压缩软件：
+gzip/gunzip：gz
+bzip/bunzip2：bz2
+xz/unxz：
+从上往下，压缩/解压耗时递增，压缩节约的空间递加（压缩率高）
+打包：
+
+tar：参数：
+1. 动作选项
+-c 创建打包文件
+-x 释放打包文件
+-t 列出打包文档中的文件
+2. 压缩选项
+-z 使用 gzip 压缩与解压打包文件
+-j 使用 bzip2 压缩与解压打包文件
+-J 使用 xz 压缩与解压打包文件
+3. 其他选项
+-f 指明创建、释放或查看的文件打包压缩文件后必须跟文件的名称
+-C 指定要解压的目标位置
+-v 查看详细信息
+
+tar命令用于将多个目录和文件打包成一个打包文件.tar，通常在打包同时，使用压缩技术将打
+包文件压缩成打包压缩文件。
+root@YCRDCTJSI-003:~# tar -czf etc.tar.gz /etc
+root@YCRDCTJSI-003:~# tar -tzvf etc.tar.gz
+root@YCRDCTJSI-003:~# tar -xzf etc.tar.gz
+root@YCRDCTJSI-003:~# tar -cjf etc.tar.bz2
+root@YCRDCTJSI-003:~# tar -tjvf etc.tar.bz2
+root@YCRDCTJSI-003:~# tar -xjf etc.tar.bz2 -C /boot
+tar命令是功能强大的打包、备份工具，除常用的功能外，下面列举了一些其他用法：
+root@YCRDCTJSI-003:~# tar -cvf test.tar *.cfg #将当前目录以.cfg结尾的文件添加到当前目录下的test.t
+root@YCRDCTJSI-003:~# tar -f test.tar -r a #将当前目录下文件a追加到当前目录下的打包文件
+root@YCRDCTJSI-003:~# tar --delete a -f test.tar #从当前目录下test.tar打包文件中删除文件a
+root@YCRDCTJSI-003:~# tar -uvf test.tar a #如果a文件比test.tar包中的a文件更新，则将新
+root@YCRDCTJSI-003:~# tar -cvf boot.tar /boot --exclude grub2 #将目录/boot打包到当前目录下的boot.tar打
+root@YCRDCTJSI-003:~# tar -xvf test.tar anaconda-ks.cfg -C /home --remove-files #将当前目录下boo
+root@YCRDCTJSI-003:~# tar -cvf boot.tar /boot -N 2017-05-01 #将自2017年5月1日后/boot目录下更改过的文件
+root@YCRDCTJSI-003:~# tar -xvf test.tar -C /home --keep-newer-files #将当前目录下test.tar打包文件释放
+
+用户权限管理：
+
+
+
+
+
